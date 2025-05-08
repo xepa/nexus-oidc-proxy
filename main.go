@@ -222,7 +222,7 @@ func NewProxy(config ProxyConfig, credentials ProxyCredentials) (*ProxyState, er
 	state.ServeMux = http.NewServeMux()
 	if config.HTTP.TokenEndpoint != nil {
 		if config.HTTP.TokenEndpoint.Path == "" {
-			return nil, fmt.Errorf("Invalid token endpoint path: %s", config.HTTP.TokenEndpoint.Path)
+			return nil, fmt.Errorf("invalid token endpoint path: %s", config.HTTP.TokenEndpoint.Path)
 		}
 		state.ServeMux.HandleFunc(config.HTTP.TokenEndpoint.Path, state.TokenEndpoint)
 	}
@@ -457,7 +457,7 @@ func (p *ProxyState) ChangePassword(userID, password string) error {
 func (p *ProxyState) ExtractClaims(r *http.Request) (token *jwt.Token, err error) {
 	rawToken, ok := r.Header[p.Config.OIDC.AccessTokenHeader]
 	if !ok || len(rawToken) == 0 {
-		err = fmt.Errorf("No access token present (%s)", p.Config.OIDC.AccessTokenHeader)
+		err = fmt.Errorf("no access token present (%s)", p.Config.OIDC.AccessTokenHeader)
 		return
 	}
 	//token, err := jwt.NewParser().Parse(rawToken[0], func(token *jwt.Token) (interface{}, error) { return token, nil })
