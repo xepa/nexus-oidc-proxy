@@ -592,7 +592,7 @@ func (p *ProxyState) TokenEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case http.MethodGet:
-		w.Write([]byte(fmt.Sprintf(TokenPageStartFmt, onboardedUser.UserID, p.Config.HTTP.TokenEndpoint.Path)))
+		w.Write(fmt.Appendf(nil, TokenPageStartFmt, onboardedUser.UserID, p.Config.HTTP.TokenEndpoint.Path))
 	case http.MethodPost:
 		randBytes := make([]byte, 1024) // TODO: Will we every need more entropy than this?
 		_, err := rand.Read(randBytes)
@@ -612,11 +612,11 @@ func (p *ProxyState) TokenEndpoint(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Errorf("Failed to set user password: %s", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(fmt.Sprintf(TokenPageFailureFmt, onboardedUser.UserID, p.Config.HTTP.TokenEndpoint.Path)))
+			w.Write(fmt.Appendf(nil, TokenPageFailureFmt, onboardedUser.UserID, p.Config.HTTP.TokenEndpoint.Path))
 			return
 		}
 		log.Debugf("Set user %s password %s", onboardedUser.UserID, newPassword)
-		w.Write([]byte(fmt.Sprintf(TokenPageSuccessFmt, onboardedUser.UserID, p.Config.HTTP.TokenEndpoint.Path, newPassword)))
+		w.Write(fmt.Appendf(nil, TokenPageSuccessFmt, onboardedUser.UserID, p.Config.HTTP.TokenEndpoint.Path, newPassword))
 		return
 
 	default:
