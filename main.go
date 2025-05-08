@@ -141,6 +141,7 @@ type ProxyOIDCConfig struct {
 	SyncInterval      Duration `json:"syncInterval"`
 	RoleTemplates     []string `json:"roleTemplates"`
 	DefaultRoles      []string `json:"defaultRoles"`
+	RemoveHeaders     []string `json:"removeHeaders"`
 	UserTemplate      string   `json:"userTemplate"`
 	WellKnownURL      URL      `json:"wellKnownURL"`
 }
@@ -479,6 +480,10 @@ func (p *ProxyState) Director(r *http.Request) {
 		log.Errorf("Failed to extract claims: %s", err)
 		return
 	}
+	for _, header := range p.Config.OIDC.RemoveHeaders {
+		r.Header.Del(header)
+	}
+
 	log.Tracef("Got token %#v\n", token)
 	onboardedUser, err := p.GetOnboardedUser(token)
 	if err != nil {
