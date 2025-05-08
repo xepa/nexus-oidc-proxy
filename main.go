@@ -2,13 +2,13 @@ package main
 
 import (
 	"bytes"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	stdlog "log"
-	"math/rand"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
