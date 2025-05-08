@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	stdlog "log"
 	"math/rand"
 	"net/http"
@@ -330,7 +330,7 @@ func (p *ProxyState) GetUsers(userID *string) ([]NexusUser, error) {
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		return nil, fmt.Errorf("GET %s: %s - %s", &getUser, res.Status, string(body))
 	}
 	tmpResult := make([]NexusUser, 0, 1)
@@ -375,7 +375,7 @@ func (p *ProxyState) CreateUser(user *NexusUser) error {
 		return err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, postUser.String(), ioutil.NopCloser(bytes.NewReader(userBytes)))
+	req, err := http.NewRequest(http.MethodPost, postUser.String(), io.NopCloser(bytes.NewReader(userBytes)))
 	if err != nil {
 		return err
 	}
@@ -388,7 +388,7 @@ func (p *ProxyState) CreateUser(user *NexusUser) error {
 	defer res.Body.Close()
 	// 200 <= result < 300
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		return fmt.Errorf("POST %s: %s - %s", &postUser, res.Status, string(body))
 	}
 	return nil
@@ -409,7 +409,7 @@ func (p *ProxyState) UpdateUser(user *NexusUser) error {
 	}
 	log.Debug(userUpdate)
 	log.Debug(string(userBytes))
-	req, err := http.NewRequest(http.MethodPut, putUser.String(), ioutil.NopCloser(bytes.NewReader(userBytes)))
+	req, err := http.NewRequest(http.MethodPut, putUser.String(), io.NopCloser(bytes.NewReader(userBytes)))
 	if err != nil {
 		return err
 	}
@@ -421,7 +421,7 @@ func (p *ProxyState) UpdateUser(user *NexusUser) error {
 	}
 	defer res.Body.Close()
 	if res.StatusCode < 200 || res.StatusCode >= 300 {
-		body, _ := ioutil.ReadAll(res.Body)
+		body, _ := io.ReadAll(res.Body)
 		return fmt.Errorf("PUT %s: %s - %s", &putUser, res.Status, string(body))
 	}
 	return nil
@@ -440,7 +440,7 @@ func (p *ProxyState) ChangePassword(userID, password string) error {
 	if err != nil {
 		return err
 	}
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		body = []byte(fmt.Sprintf("<Failed to read response body: %s>", err))
 	}
@@ -655,7 +655,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	configBytes, err := ioutil.ReadAll(configFile)
+	configBytes, err := io.ReadAll(configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
